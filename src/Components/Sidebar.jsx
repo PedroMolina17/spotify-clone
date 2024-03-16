@@ -4,7 +4,7 @@ import { VscLibrary } from "react-icons/vsc";
 import { FaArrowRight } from "react-icons/fa6";
 import { FaPlus, FaListUl } from "react-icons/fa";
 import SongCard from "./SongCard";
-
+import Footer from "./Footer";
 const Sidebar = () => {
   return (
     <div className="flex flex-col bg-black w-96 h-screen  font-semibold">
@@ -50,7 +50,7 @@ const Sidebar = () => {
               <FaListUl className="mx-2" />
             </div>
           </div>
-          <SongCard></SongCard>
+          <Footer></Footer>
         </div>
       </div>
     </div>

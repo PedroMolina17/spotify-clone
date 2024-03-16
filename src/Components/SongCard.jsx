@@ -2,40 +2,53 @@ import { useEffect, useState } from "react";
 
 const SongCard = () => {
   const [data, setData] = useState([]);
+
   useEffect(() => {
-    const fetchData = async () => {
-      const url =
-        "https://spotify23.p.rapidapi.com/search/?q=%3CREQUIRED%3E&type=multi&offset=0&limit=20&numberOfTopResults=5";
-      const options = {
-        method: "GET",
-        headers: {
-          "X-RapidAPI-Key":
-            "e7692f7f76msh4d79e254332bad8p1b3359jsn0aa348543e4b",
-          "X-RapidAPI-Host": "spotify23.p.rapidapi.com",
-        },
-      };
+    const getTopTracks = async () => {
+      const token =
+        "BQDpVj1o2JiHMLP9khUygbeldf70CFos-czfWA4Gw9g33R6h3xbt6p71ezXmi7b1dT3Ja_YTZAfpDfpxLZdYrGrsJuEhtd0BYPAdP_M829p56cGK9Fhu0hJmVyXhWw06BTPiQscOZttxFFN2gKxEY9UPXgLK4Mj9shJDy28ybxkDn5wZWUNZBCjiR3YrSEWua7RnFJW32-KpOuh3Z0a6zUS8wpmQJePHHM34P4CvjywogV3bOf5HhGHMhQHG5-xzZMXiFIIBG1Mf8TG_br16";
 
+      const res = await fetchWebApi(
+        "v1/me/top/tracks?time_range=long_term&limit=5",
+        "GET",
+        null,
+        token
+      );
+
+      return res.items;
+    };
+
+    const fetchTopTracks = async () => {
       try {
-        const response = await fetch(url, options);
-        const result = await response.json();
-
-        if (result.albums && result.tracks.items) {
-          setData(result.tracks.items);
-        } else {
-          console.error(
-            "La propiedad 'albums' o 'items' no está definida en la respuesta."
-          );
-        }
+        const topTracks = await getTopTracks();
+        setData(topTracks);
       } catch (error) {
         console.error(error);
       }
     };
 
-    fetchData();
-  }, []);
+    fetchTopTracks();
+  }, []); // Se eliminan las dependencias para evitar el cambio en cada renderizado
+
+  const fetchWebApi = async (endpoint, method, body, token) => {
+    const res = await fetch(`https://api.spotify.com/${endpoint}`, {
+      method,
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(body),
+    });
+
+    if (!res.ok) {
+      throw new Error(`Error fetching data: ${res.statusText}`);
+    }
+
+    return await res.json();
+  };
 
   return (
-    <div className="flex flex-col text-[#a9a9a9] overflow-hidden">
+    <div className="flex flex-col text-[#a9a9a9] overflow-hidden ">
       {data.map((tracks) => (
         <div key={tracks.data.uri}>
           <div className="flex py-2 px-1 items-center text-sm ">
